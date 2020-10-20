@@ -24,6 +24,12 @@
 #include <string.h>
 #include <errno.h>
 #include <ctype.h>
+#ifdef _WIN32
+#include <malloc.h>
+#endif
+#ifdef __sun
+# include <alloca.h>
+#endif
 
 #include "mustach.h"
 
@@ -79,6 +85,13 @@ static int memfile_close(FILE *file, char **buffer, size_t *size)
 #else
 static FILE *memfile_open(char **buffer, size_t *size)
 {
+    /*
+     * We can't provide *buffer and *size as open_memstream does but
+     * at least clear them so the caller won't get bad data.
+     */
+    *buffer = NULL;
+    *size = 0;
+
     return tmpfile();
 }
 static void memfile_abort(FILE *file, char **buffer, size_t *size)
@@ -404,7 +417,7 @@ int fmustach(const char *template, struct mustach_itf *itf, void *closure, FILE 
         iwrap.partial = iwrap_partial;
         iwrap.closure_partial = &iwrap;
     }
-    iwrap.emit = itf->emit ?: iwrap_emit;
+    iwrap.emit = itf->emit ? itf->emit : iwrap_emit;
     iwrap.enter = itf->enter;
     iwrap.next = itf->next;
     iwrap.leave = itf->leave;
@@ -456,3 +469,4 @@ int mustach(const char *template, struct mustach_itf *itf, void *closure, char *
     }
     return rc;
 }
+

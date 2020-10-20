@@ -36,9 +36,37 @@ struct MustacheContext {
 
         var it = name.split(separator: ".").makeIterator()
         while let path = it.next() {
-            guard case .dictionary(let data) = current else {
+           var data: [String: MustacheData]
+            switch current {
+            case .dictionary(let value):
+                data = value
+            case .array(let value):
+                let item = value[index]
+                if case .dictionary(let value) = item {
+                    data = value
+                } else {
+                    return nil
+                }
+            default:
                 return nil
             }
+//            if case .array(let list) = current {
+//                let item = list[index]
+//                guard case .dictionary(let dictData) = item else {
+//                    return nil
+//                }
+//                data = dictData
+//            } else {
+//                if case .dictionary(let dictData) = current {
+//                    data = dictData
+//                } else {
+//                    return nil
+//
+//                }
+//            }
+//            guard case .dictionary(let data) = current else {
+//                return nil
+//            }
             guard let value = data[String(path)] else {
                 return nil
             }

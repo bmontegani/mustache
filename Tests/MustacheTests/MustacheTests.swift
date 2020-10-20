@@ -41,8 +41,24 @@ final class MustacheTests: XCTestCase {
     func testSectionArray() throws {
         let result = try MustacheRenderer().render(
             template: "{{#repo}}<b>{{name}}</b>{{/repo}}",
-            data: ["repo": [["name": "vapor/vapor"],["name": "vapor/fluent"]]]
+            data: ["repo": [
+                ["name": "vapor/vapor"],
+                ["name": "vapor/fluent"]
+            ]]
         )
         XCTAssertEqual(result, "<b>vapor/vapor</b><b>vapor/fluent</b>")
+    }
+
+    func testSectionArrayWithArray() throws {
+        let result = try MustacheRenderer().render(
+            template: "{{#repo}}<b>{{name}}</b>{{#lists}}<b>{{name}}</b>{{/lists}}{{/repo}}",
+            data: ["repo": [
+                ["name": "vapor/vapor",
+                 "lists": [
+                    ["name": "abc"], ["name": "def"]]],
+                ["name": "vapor/fluent"]
+            ]]
+        )
+        XCTAssertEqual(result, "<b>vapor/vapor</b><b>abc</b><b>def</b><b>vapor/fluent</b>")
     }
 }

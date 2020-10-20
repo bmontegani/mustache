@@ -19,7 +19,6 @@
 
 #ifndef _mustach_h_included_
 #define _mustach_h_included_
-
 #include <stdio.h>
 
 struct mustach_sbuf; /* see below */
@@ -240,3 +239,4 @@ extern int fdmustach(const char *template, struct mustach_itf *itf, void *closur
 extern int mustach(const char *template, struct mustach_itf *itf, void *closure, char **result, size_t *size);
 
 #endif
+
